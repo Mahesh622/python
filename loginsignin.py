@@ -1,0 +1,125 @@
+from tkinter import *
+import threading
+import _thread
+import db
+
+class signintk(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        rootsignin=Tk()
+        rootsignin.geometry('600x350')
+        rootsignin.title('SIGN IN')
+        framesignin=Frame(rootsignin)
+        framesignin.pack(anchor=CENTER)
+        def loginsigninbuttonaction(event):
+            logintk().start()
+            rootsignin.destroy()
+        def submitsigninbuttonaction(event):
+            username=usersigninentry.get()
+            checkuser=db.users.get(username)
+            password=passwordsigninentry.get()
+            conpassword=confirmpasswordsigninentry.get()
+            if password == conpassword and checkuser == None:
+                db.users.update({username:password})
+                logintk().start()
+                rootsignin.destroy()
+            else :
+                Label(rootsignin,text='confirm password or username already exists').pack(side=BOTTOM)
+                usersigninentry.delete(0,END)
+                passwordsigninentry.delete(0,END)
+                confirmpasswordsigninentry.delete(0,END)
+                usersigninentry.config(bg='red',font=('timesnewroman',10))
+                passwordsigninentry.config(bg='red',font=('timesnewroman',10),show='*')
+                confirmpasswordsigninentry.config(bg='red',font=('timesnewroman',10),show='*')
+
+        usersigninlabel=Label(framesignin,text='USERNAME')
+        usersigninlabel.config(font=('timesnewroman',10))
+        usersigninlabel.grid()
+        usersigninentry=Entry(framesignin)
+        usersigninentry.config(bg='lightblue',font=('timesnewroman',10))
+        usersigninentry.grid()
+        passwordsigninlabel=Label(framesignin,text='PASSWORD')
+        passwordsigninlabel.config(font=('timesnewroman',10))
+        passwordsigninlabel.grid()
+        passwordsigninentry=Entry(framesignin)
+        passwordsigninentry.config(bg='lightblue',font=('timesnewroman',10),show='*')
+        passwordsigninentry.grid()
+        confirmpasswordsigninlabel=Label(framesignin,text='CONFIRMPASSWORD  ')
+        confirmpasswordsigninlabel.config(font=('timesnewroman',10))
+        confirmpasswordsigninlabel.grid()
+        confirmpasswordsigninentry=Entry(framesignin)
+        confirmpasswordsigninentry.config(bg='lightblue',font=('timesnewroman',10),show='*')
+        confirmpasswordsigninentry.grid()
+        submitsigninbutton=Button(framesignin,text='SUBMIT')
+        submitsigninbutton.config(activebackgroun='lightblue',activeforeground='white',font=('timesnewroman',10))
+        submitsigninbutton.bind('<Button>',submitsigninbuttonaction)
+        submitsigninbutton.grid(pady=10)
+        loginsigninbutton=Button(framesignin,text='LOGIN')
+        loginsigninbutton.config(activebackgroun='lightblue',activeforeground='white',font=('timesnewroman',10))
+        loginsigninbutton.bind('<Button>',loginsigninbuttonaction)
+        loginsigninbutton.grid(pady=10)
+
+        rootsignin.mainloop()
+class logintk(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        rootlogin=Tk()
+        rootlogin.geometry('500x300')
+        rootlogin.title('LOGIN')
+        framelogin=Frame(rootlogin)
+        framelogin.pack(anchor=CENTER,pady=10)
+        def signinloginbuttonaction(event):
+            signintk().start()
+            rootlogin.destroy()
+        def submitloginbuttonaction(event):
+            username=userloginentry.get()
+            upass=passwordloginentry.get()
+            checkpass=db.users.get(username)
+            if checkpass == None:
+                taDatalogin.set("You are not a registered user")
+                userloginentry.delete(0,END)
+                passwordloginentry.delete(0,END)
+                userloginentry.config(bg='red',fg='white',font=('timesnewroman',10))
+                passwordloginentry.config(bg='red',fg='white',font=('timesnewroman',10))
+            elif upass == checkpass:
+
+                taDatalogin.set('login successful')
+                userloginentry.config(bg='lightgreen',fg='white',font=('timesnewroman',10))
+                passwordloginentry.config(bg='lightgreen',fg='white',font=('timesnewroman',10))
+            else:
+                taDatalogin.set("You entered the wrong password")
+                passwordloginentry.delete(0,END)
+                userloginentry.config(bg='red',fg='white',font=('timesnewroman',10))
+                passwordloginentry.config(bg='red',fg='white',font=('timesnewroman',10))
+        taDatalogin=StringVar()
+        taDatalogin.set("")
+        taDataloginlabel=Label(rootlogin,textvariable=taDatalogin)
+        taDataloginlabel.pack(side=BOTTOM)
+        userloginlabel=Label(framelogin,text='USERNAME')
+        userloginlabel.config(font=('timesnewroman',10))
+        userloginlabel.grid()
+        userloginentry=Entry(framelogin)
+        userloginentry.config(bg='lightblue',font=('timesnewroman',10))
+        userloginentry.grid()
+        passwordloginlabel=Label(framelogin,text='PASSWORD')
+        passwordloginlabel.config(font=('timesnewroman',10))
+        passwordloginlabel.grid()
+        passwordloginentry=Entry(framelogin)
+        passwordloginentry.config(bg='lightblue',font=('timesnewroman',10),show='*')
+        passwordloginentry.bind('<Return>',submitloginbuttonaction)
+        passwordloginentry.grid()
+        submitloginbutton=Button(framelogin,text='SUBMIT')
+        submitloginbutton.config(activebackgroun='lightblue',activeforeground='white',font=('timesnewroman',10))
+        submitloginbutton.bind('<Button>',submitloginbuttonaction)
+        submitloginbutton.grid(pady=10)
+        signinloginlabel=Label(framelogin,text="Don't have an account? sign in")
+        signinloginlabel.grid()
+        signinloginbutton=Button(framelogin,text='SIGN IN')
+        signinloginbutton.config(activebackgroun='lightblue',activeforeground='white',font=('timesnewroman',10))
+        signinloginbutton.bind('<Button>',signinloginbuttonaction)
+        signinloginbutton.grid(pady=10)
+        rootlogin.mainloop()
+logintk().start()
+
